@@ -1,6 +1,9 @@
 package com.org.wmm.health.controller;
 
-import com.org.wmm.common.dto.ApiResponse;
+import com.org.wmm.common.dto.BaseResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,16 +17,19 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/health")
+@Tag(name = "Health", description = "Application health check")
 public class HealthController {
 
+    @Operation(summary = "Health check", description = "Returns application status. No authentication required.")
+    @SecurityRequirement(name = "")
     @GetMapping
-    public ResponseEntity<ApiResponse<Map<String, Object>>> health() {
+    public ResponseEntity<BaseResponse<Map<String, Object>>> health() {
         Map<String, Object> health = new HashMap<>();
         health.put("status", "UP");
         health.put("timestamp", OffsetDateTime.now());
         health.put("application", "WilliamMacMiron");
         health.put("version", "0.1.0");
 
-        return ResponseEntity.ok(ApiResponse.success(health));
+        return ResponseEntity.ok(BaseResponse.success(health));
     }
 }

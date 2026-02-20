@@ -20,7 +20,10 @@ public final class SecurityConstants {
             "/health",
             "/actuator/health",
             "/auth/**",
-            "/public/**"
+            "/public/**",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html"
     };
 
     // Admin endpoints (authentication + ADMIN/EDITOR role required)

@@ -73,7 +73,7 @@ echo   http://localhost:8080/health
 echo.
 echo Default admin credentials:
 echo   Email: admin@williammacmiron.com
-echo   Password: admin123
+echo   Password: (see V2__seed_data.sql bcrypt hash)
 echo.
 pause
 

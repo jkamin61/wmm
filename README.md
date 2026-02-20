@@ -131,7 +131,7 @@ Expected response:
 ### Default Admin Credentials
 
 - **Email:** `admin@williammacmiron.com`
-- **Password:** `admin123`
+- **Password:** *(see `V2__seed_data.sql` — bcrypt hash, set your own in seed)*
 
 ### 1. Login
 
@@ -140,7 +140,7 @@ curl -X POST http://localhost:8080/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "admin@williammacmiron.com",
-    "password": "admin123"
+    "password": "YOUR_ADMIN_PASSWORD"
   }'
 ```
 

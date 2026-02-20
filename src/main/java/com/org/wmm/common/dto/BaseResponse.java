@@ -13,7 +13,7 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ApiResponse<T> {
+public class BaseResponse<T> {
     private boolean success;
     private String message;
     private T data;
@@ -22,30 +22,30 @@ public class ApiResponse<T> {
     @Builder.Default
     private OffsetDateTime timestamp = OffsetDateTime.now();
 
-    public static <T> ApiResponse<T> success(T data) {
-        return ApiResponse.<T>builder()
+    public static <T> BaseResponse<T> success(T data) {
+        return BaseResponse.<T>builder()
                 .success(true)
                 .data(data)
                 .build();
     }
 
-    public static <T> ApiResponse<T> success(T data, String message) {
-        return ApiResponse.<T>builder()
+    public static <T> BaseResponse<T> success(T data, String message) {
+        return BaseResponse.<T>builder()
                 .success(true)
                 .message(message)
                 .data(data)
                 .build();
     }
 
-    public static <T> ApiResponse<T> error(String message) {
-        return ApiResponse.<T>builder()
+    public static <T> BaseResponse<T> error(String message) {
+        return BaseResponse.<T>builder()
                 .success(false)
                 .message(message)
                 .build();
     }
 
-    public static <T> ApiResponse<T> error(ApiError error) {
-        return ApiResponse.<T>builder()
+    public static <T> BaseResponse<T> error(ApiError error) {
+        return BaseResponse.<T>builder()
                 .success(false)
                 .message(error.getMessage())
                 .error(error)

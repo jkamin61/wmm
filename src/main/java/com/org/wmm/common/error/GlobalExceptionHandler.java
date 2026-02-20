@@ -1,7 +1,7 @@
 package com.org.wmm.common.error;
 
 import com.org.wmm.common.dto.ApiError;
-import com.org.wmm.common.dto.ApiResponse;
+import com.org.wmm.common.dto.BaseResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleResourceNotFound(ResourceNotFoundException ex) {
+    public ResponseEntity<BaseResponse<Void>> handleResourceNotFound(ResourceNotFoundException ex) {
         log.error("Resource not found: {}", ex.getMessage());
 
         ApiError error = ApiError.builder()
@@ -32,11 +32,11 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse.error(error));
+                .body(BaseResponse.error(error));
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ApiResponse<Void>> handleBadRequest(BadRequestException ex) {
+    public ResponseEntity<BaseResponse<Void>> handleBadRequest(BadRequestException ex) {
         log.error("Bad request: {}", ex.getMessage());
 
         ApiError error = ApiError.builder()
@@ -47,11 +47,11 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(error));
+                .body(BaseResponse.error(error));
     }
 
     @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleUnauthorized(UnauthorizedException ex) {
+    public ResponseEntity<BaseResponse<Void>> handleUnauthorized(UnauthorizedException ex) {
         log.error("Unauthorized: {}", ex.getMessage());
 
         ApiError error = ApiError.builder()
@@ -62,11 +62,11 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body(ApiResponse.error(error));
+                .body(BaseResponse.error(error));
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleAccessDenied(AccessDeniedException ex) {
+    public ResponseEntity<BaseResponse<Void>> handleAccessDenied(AccessDeniedException ex) {
         log.error("Access denied: {}", ex.getMessage());
 
         ApiError error = ApiError.builder()
@@ -77,11 +77,11 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
-                .body(ApiResponse.error(error));
+                .body(BaseResponse.error(error));
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ApiResponse<Void>> handleBadCredentials(BadCredentialsException ex) {
+    public ResponseEntity<BaseResponse<Void>> handleBadCredentials(BadCredentialsException ex) {
         log.error("Bad credentials: {}", ex.getMessage());
 
         ApiError error = ApiError.builder()
@@ -92,11 +92,11 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body(ApiResponse.error(error));
+                .body(BaseResponse.error(error));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Void>> handleValidationErrors(MethodArgumentNotValidException ex) {
+    public ResponseEntity<BaseResponse<Void>> handleValidationErrors(MethodArgumentNotValidException ex) {
         Map<String, String> fieldErrors = new HashMap<>();
 
         ex.getBindingResult().getAllErrors().forEach(error -> {
@@ -117,11 +117,11 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(error));
+                .body(BaseResponse.error(error));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleGenericException(Exception ex) {
+    public ResponseEntity<BaseResponse<Void>> handleGenericException(Exception ex) {
         log.error("Unexpected error: ", ex);
 
         ApiError error = ApiError.builder()
@@ -132,7 +132,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.error(error));
+                .body(BaseResponse.error(error));
     }
 }
 

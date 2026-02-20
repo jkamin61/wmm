@@ -1,9 +1,13 @@
 package com.org.wmm.users.controller;
 
 import com.org.wmm.auth.dto.UserInfo;
-import com.org.wmm.common.dto.ApiResponse;
+import com.org.wmm.common.dto.BaseResponse;
 import com.org.wmm.users.entity.UserEntity;
 import com.org.wmm.users.service.CustomUserDetailsService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +23,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
+@Tag(name = "Users", description = "Current user profile")
 public class UserController {
 
     private final CustomUserDetailsService userDetailsService;
@@ -26,8 +31,13 @@ public class UserController {
     /**
      * GET /users/me - Get current authenticated user info
      */
+    @Operation(summary = "Get current user", description = "Returns profile of the currently authenticated user (from JWT).")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User info"),
+            @ApiResponse(responseCode = "401", description = "Not authenticated")
+    })
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<UserInfo>> getCurrentUser() {
+    public ResponseEntity<BaseResponse<UserInfo>> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
 
@@ -44,6 +54,6 @@ public class UserController {
                         .collect(Collectors.toList()))
                 .build();
 
-        return ResponseEntity.ok(ApiResponse.success(userInfo));
+        return ResponseEntity.ok(BaseResponse.success(userInfo));
     }
 }
