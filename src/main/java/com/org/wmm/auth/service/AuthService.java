@@ -3,6 +3,7 @@ package com.org.wmm.auth.service;
 import com.org.wmm.auth.domain.RefreshTokenEntity;
 import com.org.wmm.auth.dto.AuthResponse;
 import com.org.wmm.auth.dto.LoginRequest;
+import com.org.wmm.auth.dto.RegisterRequest;
 import com.org.wmm.auth.dto.UserInfo;
 import com.org.wmm.auth.repository.RefreshTokenRepository;
 import com.org.wmm.common.error.BadRequestException;
@@ -30,6 +31,8 @@ import java.time.OffsetDateTime;
 import java.util.Base64;
 import java.util.stream.Collectors;
 
+import static com.org.wmm.common.constants.SecurityConstants.BCRYPT;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -47,6 +50,29 @@ public class AuthService {
 
     @Value("${jwt.access-token-expiration}")
     private long accessTokenExpiration;
+
+    /**
+     * Register user
+     */
+    @Transactional
+    public AuthResponse register(RegisterRequest registerRequest, HttpServletRequest httpServletRequest) {
+        if (userRepository.existsByEmail(registerRequest.getEmail())) {
+            throw new IllegalArgumentException("Email already in use");
+        }
+
+        UserEntity user = UserEntity.builder()
+                .displayName(registerRequest.getDisplayName())
+                .email(registerRequest.getEmail())
+                .passwordHash(passwordEncoder.encode(registerRequest.getPassword()))
+                .passwordAlgo(BCRYPT)
+                .build();
+
+        userRepository.save(user);
+        log.info("User registered successfully: {}", user.getEmail());
+
+        LoginRequest loginRequest = new LoginRequest(registerRequest.getEmail(), registerRequest.getPassword());
+        return login(loginRequest, httpServletRequest);
+    }
 
     /**
      * Authenticate user and generate tokens

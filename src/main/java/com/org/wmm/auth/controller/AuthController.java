@@ -3,6 +3,7 @@ package com.org.wmm.auth.controller;
 import com.org.wmm.auth.dto.AuthResponse;
 import com.org.wmm.auth.dto.LoginRequest;
 import com.org.wmm.auth.dto.RefreshTokenRequest;
+import com.org.wmm.auth.dto.RegisterRequest;
 import com.org.wmm.auth.service.AuthService;
 import com.org.wmm.common.dto.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +32,26 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+
+    @Operation(summary = "Register", description = "Register new user with username, email and password. Logs in after successful registration and returns access + refresh tokens.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Created"),
+            @ApiResponse(responseCode = "400", description = "Validation error",
+                    content = @Content(schema = @Schema(implementation = BaseResponse.class)))
+    })
+    @SecurityRequirement(name = "")
+    @PostMapping("/register")
+    public ResponseEntity<BaseResponse<AuthResponse>> register(
+            @Valid @RequestBody RegisterRequest registerRequest,
+            HttpServletRequest httpServletRequest
+    ) {
+        log.info("Register request: {}", registerRequest);
+        AuthResponse response = authService.register(registerRequest, httpServletRequest);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(BaseResponse.success(response, "Registration successful"));
+    }
+
 
     @Operation(summary = "Login", description = "Authenticate with email and password. Returns access + refresh tokens.")
     @ApiResponses({

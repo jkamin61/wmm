@@ -19,6 +19,8 @@ public final class SecurityConstants {
     public static final String[] PUBLIC_ENDPOINTS = {
             "/health",
             "/actuator/health",
+            "/auth/register",
+            "/auth/login",
             "/auth/**",
             "/public/**",
             "/v3/api-docs/**",
@@ -30,5 +32,7 @@ public final class SecurityConstants {
     public static final String[] ADMIN_ENDPOINTS = {
             "/admin/**"
     };
+
+    public static final String BCRYPT = "bcrypt";
 }
 
