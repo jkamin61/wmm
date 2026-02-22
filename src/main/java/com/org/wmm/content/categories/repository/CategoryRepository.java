@@ -21,5 +21,13 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> 
     Optional<CategoryEntity> findBySlugAndIsActiveTrue(String slug);
 
     Optional<CategoryEntity> findBySlug(String slug);
+
+    boolean existsBySlug(String slug);
+
+    @Query("SELECT c FROM CategoryEntity c LEFT JOIN FETCH c.translations WHERE c.id = :id")
+    Optional<CategoryEntity> findByIdWithTranslations(@Param("id") Long id);
+
+    @Query("SELECT DISTINCT c FROM CategoryEntity c LEFT JOIN FETCH c.translations ORDER BY c.displayOrder ASC")
+    List<CategoryEntity> findAllWithTranslations();
 }
 

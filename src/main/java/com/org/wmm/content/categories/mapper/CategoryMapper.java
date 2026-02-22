@@ -1,5 +1,6 @@
 package com.org.wmm.content.categories.mapper;
 
+import com.org.wmm.content.categories.dto.AdminCategoryDto;
 import com.org.wmm.content.categories.dto.CategoryMenuDto;
 import com.org.wmm.content.categories.entity.CategoryEntity;
 import com.org.wmm.content.categories.entity.CategoryTranslationEntity;
@@ -79,6 +80,42 @@ public class CategoryMapper {
                         .filter(t -> t.getLanguage().getId().equals(defaultLangId))
                         .findFirst()
                         .orElse(entity.getTranslations().get(0)));
+    }
+
+    /**
+     * Maps a CategoryEntity to AdminCategoryDto (includes all translations).
+     */
+    public AdminCategoryDto toAdminDto(CategoryEntity entity) {
+        List<AdminCategoryDto.TranslationDto> translationDtos = entity.getTranslations() != null
+                ? entity.getTranslations().stream()
+                .map(this::toTranslationDto)
+                .collect(Collectors.toList())
+                : List.of();
+
+        return AdminCategoryDto.builder()
+                .id(entity.getId())
+                .slug(entity.getSlug())
+                .icon(entity.getIcon())
+                .displayOrder(entity.getDisplayOrder())
+                .isActive(entity.getIsActive())
+                .status(entity.getStatus())
+                .publishedAt(entity.getPublishedAt())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .translations(translationDtos)
+                .build();
+    }
+
+    private AdminCategoryDto.TranslationDto toTranslationDto(CategoryTranslationEntity translation) {
+        return AdminCategoryDto.TranslationDto.builder()
+                .id(translation.getId())
+                .languageCode(translation.getLanguage().getCode())
+                .languageName(translation.getLanguage().getName())
+                .title(translation.getTitle())
+                .description(translation.getDescription())
+                .metaTitle(translation.getMetaTitle())
+                .metaDescription(translation.getMetaDescription())
+                .build();
     }
 }
 
