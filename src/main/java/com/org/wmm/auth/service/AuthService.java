@@ -9,7 +9,10 @@ import com.org.wmm.auth.repository.RefreshTokenRepository;
 import com.org.wmm.common.error.BadRequestException;
 import com.org.wmm.common.error.UnauthorizedException;
 import com.org.wmm.security.JwtTokenProvider;
+import com.org.wmm.users.entity.RoleEntity;
 import com.org.wmm.users.entity.UserEntity;
+import com.org.wmm.users.entity.UserRoleEntity;
+import com.org.wmm.users.repository.RoleRepository;
 import com.org.wmm.users.repository.UserRepository;
 import com.org.wmm.users.service.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,6 +47,7 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
 
     @Value("${jwt.refresh-token-expiration}")
     private long refreshTokenExpiration;
@@ -68,7 +72,18 @@ public class AuthService {
                 .build();
 
         userRepository.save(user);
-        log.info("User registered successfully: {}", user.getEmail());
+
+        RoleEntity defaultRole = roleRepository.findByName("ROLE_VIEWER")
+                .orElseThrow(() -> new IllegalStateException("Default role ROLE_VIEWER not found in database"));
+
+        UserRoleEntity userRole = UserRoleEntity.builder()
+                .userId(user.getId())
+                .roleId(defaultRole.getId())
+                .build();
+        user.getUserRoles().add(userRole);
+        userRepository.save(user);
+
+        log.info("User registered successfully with ROLE_VIEWER: {}", user.getEmail());
 
         LoginRequest loginRequest = new LoginRequest(registerRequest.getEmail(), registerRequest.getPassword());
         return login(loginRequest, httpServletRequest);

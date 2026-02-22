@@ -41,9 +41,9 @@ build/
 
 ### Uploads and Media ###
 uploads/
-media/
 
 ### Logs ###
 *.log
 logs/
 
+docs/
