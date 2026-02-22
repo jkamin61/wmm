@@ -39,5 +39,27 @@ public interface ItemRepository extends JpaRepository<ItemEntity, Long> {
             "LEFT JOIN FETCH i.translations " +
             "WHERE i.slug = :slug AND i.status = 'published'")
     Optional<ItemEntity> findPublishedBySlug(@Param("slug") String slug);
+
+    boolean existsBySlug(String slug);
+
+    @Query("SELECT i FROM ItemEntity i " +
+            "LEFT JOIN FETCH i.translations " +
+            "LEFT JOIN FETCH i.images " +
+            "LEFT JOIN FETCH i.category " +
+            "LEFT JOIN FETCH i.topic " +
+            "LEFT JOIN FETCH i.subtopic " +
+            "WHERE i.id = :id")
+    Optional<ItemEntity> findByIdWithDetails(@Param("id") Long id);
+
+    @Query("SELECT i FROM ItemEntity i " +
+            "WHERE (:status IS NULL OR i.status = :status) " +
+            "AND (:topicId IS NULL OR i.topic.id = :topicId) " +
+            "AND (:categoryId IS NULL OR i.category.id = :categoryId)")
+    Page<ItemEntity> findAllFiltered(
+            @Param("status") String status,
+            @Param("topicId") Long topicId,
+            @Param("categoryId") Long categoryId,
+            Pageable pageable
+    );
 }
 

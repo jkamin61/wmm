@@ -2,6 +2,7 @@ package com.org.wmm.content.items.mapper;
 
 import com.org.wmm.content.categories.entity.CategoryEntity;
 import com.org.wmm.content.categories.entity.CategoryTranslationEntity;
+import com.org.wmm.content.items.dto.AdminItemDto;
 import com.org.wmm.content.items.dto.ItemDetailDto;
 import com.org.wmm.content.items.dto.ItemSummaryDto;
 import com.org.wmm.content.items.entity.*;
@@ -205,6 +206,56 @@ public class ItemMapper {
                         .filter(t -> t.getLanguage().getId().equals(defaultLangId))
                         .findFirst()
                         .orElse(null));
+    }
+
+    /**
+     * Maps an ItemEntity to AdminItemDto (includes all translations, no language resolution).
+     */
+    public AdminItemDto toAdminDto(ItemEntity entity) {
+        List<AdminItemDto.TranslationDto> translationDtos = entity.getTranslations() != null
+                ? entity.getTranslations().stream()
+                .map(this::toAdminTranslationDto)
+                .collect(Collectors.toList())
+                : List.of();
+
+        return AdminItemDto.builder()
+                .id(entity.getId())
+                .slug(entity.getSlug())
+                .categoryId(entity.getCategory() != null ? entity.getCategory().getId() : null)
+                .categorySlug(entity.getCategory() != null ? entity.getCategory().getSlug() : null)
+                .topicId(entity.getTopic() != null ? entity.getTopic().getId() : null)
+                .topicSlug(entity.getTopic() != null ? entity.getTopic().getSlug() : null)
+                .subtopicId(entity.getSubtopic() != null ? entity.getSubtopic().getId() : null)
+                .subtopicSlug(entity.getSubtopic() != null ? entity.getSubtopic().getSlug() : null)
+                .partnerId(entity.getPartnerId())
+                .abv(entity.getAbv())
+                .vintage(entity.getVintage())
+                .volumeMl(entity.getVolumeMl())
+                .pricePln(entity.getPricePln())
+                .isFeatured(entity.getIsFeatured())
+                .status(entity.getStatus())
+                .publishedAt(entity.getPublishedAt())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .translations(translationDtos)
+                .imageCount(entity.getImages() != null ? entity.getImages().size() : 0)
+                .hasTastingNote(entity.getTastingNote() != null)
+                .build();
+    }
+
+    private AdminItemDto.TranslationDto toAdminTranslationDto(ItemTranslationEntity translation) {
+        return AdminItemDto.TranslationDto.builder()
+                .id(translation.getId())
+                .languageCode(translation.getLanguage().getCode())
+                .languageName(translation.getLanguage().getName())
+                .title(translation.getTitle())
+                .subtitle(translation.getSubtitle())
+                .excerpt(translation.getExcerpt())
+                .description(translation.getDescription())
+                .metaTitle(translation.getMetaTitle())
+                .metaDescription(translation.getMetaDescription())
+                .metaKeywords(translation.getMetaKeywords())
+                .build();
     }
 }
 
