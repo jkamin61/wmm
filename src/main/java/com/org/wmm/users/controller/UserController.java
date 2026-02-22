@@ -5,6 +5,8 @@ import com.org.wmm.common.dto.BaseResponse;
 import com.org.wmm.users.entity.UserEntity;
 import com.org.wmm.users.service.CustomUserDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,10 +33,15 @@ public class UserController {
     /**
      * GET /users/me - Get current authenticated user info
      */
-    @Operation(summary = "Get current user", description = "Returns profile of the currently authenticated user (from JWT).")
+    @Operation(
+            summary = "Get current user",
+            description = "Returns profile of the currently authenticated user based on the JWT bearer token. " +
+                    "Includes user ID, email, display name and assigned roles."
+    )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "User info"),
-            @ApiResponse(responseCode = "401", description = "Not authenticated")
+            @ApiResponse(responseCode = "200", description = "Authenticated user profile"),
+            @ApiResponse(responseCode = "401", description = "Missing or invalid JWT token",
+                    content = @Content(schema = @Schema(implementation = BaseResponse.class)))
     })
     @GetMapping("/me")
     public ResponseEntity<BaseResponse<UserInfo>> getCurrentUser() {
