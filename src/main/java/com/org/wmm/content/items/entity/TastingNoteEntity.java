@@ -1,5 +1,8 @@
 package com.org.wmm.content.items.entity;
 
+import com.org.wmm.tasting.entity.AromaFlavorEntity;
+import com.org.wmm.tasting.entity.FinishFlavorEntity;
+import com.org.wmm.tasting.entity.TasteFlavorEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -62,5 +65,20 @@ public class TastingNoteEntity {
     @OneToMany(mappedBy = "tastingNote", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<TastingNoteTranslationEntity> translations = new ArrayList<>();
+
+    @OneToMany(mappedBy = "tastingNote", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("displayOrder ASC")
+    @Builder.Default
+    private List<AromaFlavorEntity> aromaFlavors = new ArrayList<>();
+
+    @OneToMany(mappedBy = "tastingNote", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("displayOrder ASC")
+    @Builder.Default
+    private List<TasteFlavorEntity> tasteFlavors = new ArrayList<>();
+
+    @OneToMany(mappedBy = "tastingNote", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("displayOrder ASC")
+    @Builder.Default
+    private List<FinishFlavorEntity> finishFlavors = new ArrayList<>();
 }
 
