@@ -4,12 +4,15 @@ import com.org.wmm.audit.entity.AuditLogEntity;
 import com.org.wmm.audit.repository.AuditLogRepository;
 import com.org.wmm.users.entity.UserEntity;
 import com.org.wmm.users.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Slf4j
 @Service
@@ -67,6 +70,8 @@ public class AuditService {
                               String oldValues, String newValues) {
         try {
             Long userId = getCurrentUserId();
+            String ipAddress = getClientIpAddress();
+            String userAgent = getClientUserAgent();
 
             AuditLogEntity auditLog = AuditLogEntity.builder()
                     .userId(userId)
@@ -75,6 +80,8 @@ public class AuditService {
                     .action(action)
                     .oldValues(oldValues)
                     .newValues(newValues)
+                    .ipAddress(ipAddress)
+                    .userAgent(userAgent)
                     .build();
 
             auditLogRepository.save(auditLog);
@@ -94,6 +101,38 @@ public class AuditService {
             }
         } catch (Exception e) {
             log.warn("Could not determine current user for audit log", e);
+        }
+        return null;
+    }
+
+    private String getClientIpAddress() {
+        try {
+            ServletRequestAttributes attrs =
+                    (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attrs != null) {
+                HttpServletRequest request = attrs.getRequest();
+                String xForwardedFor = request.getHeader("X-Forwarded-For");
+                if (xForwardedFor != null && !xForwardedFor.isBlank()) {
+                    return xForwardedFor.split(",")[0].trim();
+                }
+                return request.getRemoteAddr();
+            }
+        } catch (Exception e) {
+            log.trace("Could not determine client IP", e);
+        }
+        return null;
+    }
+
+    private String getClientUserAgent() {
+        try {
+            ServletRequestAttributes attrs =
+                    (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attrs != null) {
+                String ua = attrs.getRequest().getHeader("User-Agent");
+                return ua != null && ua.length() > 500 ? ua.substring(0, 500) : ua;
+            }
+        } catch (Exception e) {
+            log.trace("Could not determine user agent", e);
         }
         return null;
     }
