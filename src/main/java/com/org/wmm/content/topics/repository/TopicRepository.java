@@ -24,5 +24,19 @@ public interface TopicRepository extends JpaRepository<TopicEntity, Long> {
     Optional<TopicEntity> findBySlugActiveWithTranslations(@Param("slug") String slug);
 
     Optional<TopicEntity> findBySlugAndIsActiveTrue(String slug);
+
+    boolean existsBySlug(String slug);
+
+    boolean existsByCategoryIdAndSlug(Long categoryId, String slug);
+
+    @Query("SELECT t FROM TopicEntity t LEFT JOIN FETCH t.translations WHERE t.id = :id")
+    Optional<TopicEntity> findByIdWithTranslations(@Param("id") Long id);
+
+    @Query("SELECT DISTINCT t FROM TopicEntity t LEFT JOIN FETCH t.translations " +
+            "WHERE t.category.id = :categoryId ORDER BY t.displayOrder ASC")
+    List<TopicEntity> findAllByCategoryIdWithTranslations(@Param("categoryId") Long categoryId);
+
+    @Query("SELECT DISTINCT t FROM TopicEntity t LEFT JOIN FETCH t.translations ORDER BY t.displayOrder ASC")
+    List<TopicEntity> findAllWithTranslations();
 }
 
